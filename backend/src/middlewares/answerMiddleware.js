@@ -1,8 +1,8 @@
 const utils = require('./utils');
 
 const validateBody = (req, res, next) => {
-    const fields = ['name'];
-    const types = ['string'];
+    const fields = ['userid', 'questionid', 'text'];
+    const types = ['string', 'string', 'string'];
 
     const { valid, message } = utils.validateFields(fields, req.body);
 

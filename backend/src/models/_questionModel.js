@@ -1,14 +1,14 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const createForm = async form => {
-    return await prisma.form.create({
-        data: form
+const createQuestion = async question => {
+    return await prisma.question.create({
+        data: question
     }).then(() => {
         prisma.$disconnect();
         return {
             status: "ok",
-            message: "Form Created"
+            message: "Question Created"
         };
     })
     .catch(e => {
@@ -21,5 +21,5 @@ const createForm = async form => {
 }
 
 module.exports = {
-    createForm
+    createQuestion
 }

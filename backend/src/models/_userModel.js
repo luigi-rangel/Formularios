@@ -1,5 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
-const { PrismaClientKnownRequestError, PrismaClientValidationError } = require('@prisma/client/runtime');
+const { PrismaClientKnownRequestError } = require('@prisma/client/runtime');
 
 require('dotenv').config();
 
@@ -31,13 +31,23 @@ const createUser = async user => {
 }
 
 const getUser = async data => {
-    const answer = await prisma.user.findMany({
+    return await prisma.user.findUnique({
         where: {
             email: data.email
         }
-    }).then(res => {
-        prisma.$disconnect();
-        return res;
+    }).then(async res => {
+        await prisma.user.update({
+            where: {
+                email: data.email
+            },
+            data: {
+                lastAccess: new Date()
+            }
+        })
+        return {
+            status: "ok",
+            data: res
+        };
     }).catch(e => {
         prisma.$disconnect;
         
@@ -46,15 +56,6 @@ const getUser = async data => {
             message: e.message
         };
     });
-
-    if(answer.hasOwnProperty('status')){
-        return answer;
-    }
-    
-    return {
-        status: "ok",
-        data: answer
-    };
 }
 
 const getAdmin = async () => {

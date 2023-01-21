@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 
-const model = require('../models/.userModel');
+const model = require('../models/_userModel');
 const utils = require('../middlewares/utils');
 
 const createUser = async (req, res) => {
@@ -18,19 +18,19 @@ const getUser = async (req, res) => {
     const answer = await model.getUser(req.body);
 
     if(answer.status == "ok") {
-        const [{userid, lastAccess, password, ...user}] = answer.data;
+        const {lastAccess, password, ...user} = answer.data;
 
         if(!await utils.validateUser(req.body.password, password)) {
             return res.status(401).json({status: "error", message: "Wrong password"});
         }
 
-        await bcrypt.hash(`${userid}${lastAccess}`, 12)
+        await bcrypt.hash(`${password}${lastAccess}`, 12)
             .then(hash => {
                 user.hash = hash;
             });
-        answer.data = user;
+        answer.data = [user];
 
-        return res.status(201).json(answer);
+        return res.status(200).json(answer);
     }
     
     return res.status(500).json(answer);

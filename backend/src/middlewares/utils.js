@@ -1,11 +1,11 @@
 const bcrypt = require('bcrypt');
 
-const validateFields = (fields, body) => {
+const validateFields = (fields, area) => {
     let valid = true;
     let message = [];
 
     for(let item in fields){
-        if(!(fields[item] in body && body[fields[item]])){
+        if(!(fields[item] in area && area[fields[item]])){
             valid = false;
             message.push(`field '${fields[item]}' is required and can not be empty.`);
         }
