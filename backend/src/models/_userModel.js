@@ -1,26 +1,21 @@
 const { PrismaClient } = require('@prisma/client');
 const { PrismaClientKnownRequestError } = require('@prisma/client/runtime');
 
-require('dotenv').config();
-
 const prisma = new PrismaClient();
 
 const createUser = async user => {
     return await prisma.user.create({
         data: user
     }).then(() => {
-        prisma.$disconnect();
         return {
             status: "ok", 
             message: "User created"
         };
     }).catch(e => {
-        prisma.$disconnect;
-
         if(e instanceof PrismaClientKnownRequestError && e.code == 'P2002'){
             return {
                 status: "error",
-                message: "Username taken"
+                message: "Email taken"
             }
         }
         return {
@@ -36,21 +31,27 @@ const getUser = async data => {
             email: data.email
         }
     }).then(async res => {
+        if(!res) return {
+            status: "ok",
+            data: res
+        }
+        
+        res.lastAccess = new Date();
+
         await prisma.user.update({
             where: {
                 email: data.email
             },
             data: {
-                lastAccess: new Date()
+                lastAccess: res.lastAccess
             }
-        })
+        });
+
         return {
             status: "ok",
             data: res
         };
     }).catch(e => {
-        prisma.$disconnect;
-        
         return {
             status: "error",
             message: e.message
@@ -58,19 +59,17 @@ const getUser = async data => {
     });
 }
 
-const getAdmin = async () => {
+const getUserById = async id => {
     return await prisma.user.findUnique({
         where: {
-            userid: process.env.ADMIN_ID
+            userid: id
         }
     }).then(res => {
-        prisma.$disconnect();
         return {
             status: "ok", 
-            data: [res]
+            data: res
         };
     }).catch(e => {
-        prisma.$disconnect;
         return {
             status: "error", 
             message: e.message
@@ -78,8 +77,57 @@ const getAdmin = async () => {
     });
 }
 
+const updateUser = async data => {
+    return await prisma.user.update({
+        where: {
+            email: data.email
+        },
+        data: {...data, lastAccess: new Date()}
+    }).then(res => {
+        return {
+            status: "ok",
+            data: [res]
+        };
+    }).catch(e => {
+        if(e instanceof PrismaClientKnownRequestError && e.code == "P2002") return {
+            status: "error",
+            message: "Email taken"
+        };
+        return {
+            status: "error",
+            message: e.message
+        }
+    })
+}
+
+const deleteUser = async email => {
+    return await prisma.user.delete({
+        where: {
+            email: email
+        }
+    }).then(() => {
+        return {
+            status: "ok",
+            message: "User deleted"
+        }
+    }).catch(e => {
+        if(e instanceof PrismaClientKnownRequestError && e.code == "P2025"){
+            return {
+                status: "error",
+                message: "User not found"
+            }
+        }
+        return {
+            status: "error",
+            message: e.code
+        }
+    });
+}
+
 module.exports = {
     createUser,
     getUser,
-    getAdmin
+    getUserById,
+    updateUser,
+    deleteUser
 }

@@ -16,28 +16,26 @@ const question = require('./middlewares/questionMiddleware');
 const answer = require('./middlewares/answerMiddleware');
 const admin = require('./middlewares/adminMiddleware');
 
-//post
 router.post('/user', user.validateBody, userController.createUser);
 router.post('/question', question.validateBody, admin.validateAdmin, questionController.createQuestion);
 router.post('/form', form.validateBody, admin.validateAdmin, formController.createForm);
-router.post('/answer', answer.validateBody, answerController.createAnswer);
+router.post('/answer', answer.validateBody, user.validateUser, answerController.createAnswer); //alterar para enviar todas as respostas de uma vez
 
-//get
 router.get('/user', userController.getUser);
 router.get('/forms', formController.getAllForms);
 router.get('/form/', formController.getFormById);
 router.get('/form/answers/:id', admin.validateAdmin, formController.getAllFormAnswers);
 
-//put
-router.put('/user/:id');
-router.put('/question/:id', admin.validateAdmin);
-router.put('/form/:id', admin.validateAdmin);
+router.put('/user', admin.validateAdmin, userController.updateUser);
+router.put('/question', admin.validateAdmin, questionController.updateQuestion);
+router.put('/form', admin.validateAdmin, formController.updateForm);
+router.put('/answer', user.validateUser, answerController.updateAnswer);
 
 //delete
-router.delete('/user/:id');
-router.delete('/question/:id', admin.validateAdmin);
-router.delete('/form/:id', admin.validateAdmin);
-router.delete('/form/:id/answers', admin.validateAdmin);
+router.delete('/user/', admin.validateAdmin, userController.deleteUser);
+router.delete('/question/:id', admin.validateAdmin, questionController.deleteQuestion);
+router.delete('/form/:id', admin.validateAdmin, formController.deleteForm);
+router.delete('/answers/form', admin.validateAdmin, answerController.deleteFormAnswers);
 
 //patch
 router.patch('/answer/:grade/grade', admin.validateAdmin);

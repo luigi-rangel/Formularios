@@ -26,7 +26,7 @@ model Answer {
   text String?
   grade Float?
 
-  @@id([userid, questionid])
+  @@id(fields: [userid, questionid], name: "id")
 }
 
 model Question {

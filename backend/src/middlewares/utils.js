@@ -32,8 +32,18 @@ const validateUser = async (string, hash) => {
     return await bcrypt.compare(string, hash);
 }
 
+const createHash = async (password, lastAccess) => {
+    return await bcrypt.hash(`${password.substring(20)}${lastAccess.toISOString()}`, 12);
+}
+
+const validateHash = async (password, lastAccess, hash) => {
+    return await validateUser(`${password.substring(20)}${lastAccess.toISOString()}`, hash);
+}
+
 module.exports = {
     validateFields,
     validateFieldTypes,
-    validateUser
+    validateUser,
+    createHash,
+    validateHash
 }

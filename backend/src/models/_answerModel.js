@@ -29,6 +29,56 @@ const createAnswer = async answer => {
     });
 }
 
-module.exports = {
-    createAnswer
+const updateAnswer = async data => {
+    return await prisma.answer.update({
+        where: {
+            id: {
+                questionid: data.questionid,
+                userid: data.userid
+            }
+        },
+        data: data
+    }).then(res => {
+        return {
+            status: "ok",
+            data: res
+        }
+    }).catch(e => {
+        return {
+            status: "error",
+            message: e.message
+        }
+    });
 }
+
+const deleteFormAnswers = async (formid, userid) => {
+
+    return await prisma.answer.deleteMany({
+        where: {
+            question: {
+                form: {
+                    formid: formid
+                }
+            },
+            user: {
+                userid: userid
+            }
+        }
+    }).then(() => {
+        return {
+            status: "ok",
+            message: "Answers deleted"
+        };
+    }).catch(e => {
+        return {
+            status: "error",
+            message: e.message
+        }
+    })
+}
+
+module.exports = {
+    createAnswer,
+    updateAnswer,
+    deleteFormAnswers
+};

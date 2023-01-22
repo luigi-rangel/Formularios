@@ -24,9 +24,24 @@ const getAllFormAnswers = async (req, res) => {
     return res.status(500).json(answer);
 }
 
+const updateForm = async (req, res) => {
+    const answer = await model.updateForm(req.body);
+    if(answer.status == "ok") return res.status(200).json(answer);
+    return res.status(500).json(answer);
+}
+
+const deleteForm = async (req, res) => {
+    const answer = await model.deleteForm(req.params.id);
+    if(answer.status == "ok") return res.status(200).json(answer);
+    if(answer.message == "Form not found") return res.status(404).json(answer);
+    return res.status(500).json(answer);
+}
+
 module.exports = {
     createForm,
     getAllForms,
     getFormById,
-    getAllFormAnswers
+    getAllFormAnswers,
+    updateForm,
+    deleteForm
 }
