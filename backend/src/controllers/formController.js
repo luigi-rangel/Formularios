@@ -7,13 +7,19 @@ const createForm = async (req, res) => {
 }
 
 const getAllForms = async (_req, res) => {
-    const answer = await model.getAllForms();
+    const answer = await model.getForms(true);
     if(answer.status == "ok") return res.status(200).json(answer);
     return res.status(500).json(answer);
 }
 
-const getFormById = async (req, res) => {
-    const answer = await model.getFormById(req.query.formid, req.query.userid);
+const getVisibleForms = async (_req, res) => {
+    const answer = await model.getForms();
+    if(answer.status == "ok") return res.status(200).json(answer);
+    return res.status(500).json(answer);
+}
+
+const getFormAnswersById = async (req, res) => {
+    const answer = await model.getFormAnswersById(req.query.formid, req.query.userid);
     if(answer.status == "ok") return res.status(200).json(answer);
     return res.status(500).json(answer);
 }
@@ -37,11 +43,28 @@ const deleteForm = async (req, res) => {
     return res.status(500).json(answer);
 }
 
+const updateVisibility = async (req, res) => {
+    const answer = await model.updateVisibility(req.query.formid, !!req.params.visibility);
+    if(answer.status == "ok") return res.status(200).json(answer);
+    if(answer.message == "Form not found") return res.status(404).json(answer);
+    return res.status(500).json(answer);
+}
+
+const updateState = async (req, res) => {
+    const answer = await model.updateState(req.query.formid, !!req.params.state);
+    if(answer.status == "ok") return res.status(200).json(answer);
+    if(answer.message == "Form not found") return res.status(404).json(answer);
+    return res.status(500).json(answer);
+}
+
 module.exports = {
     createForm,
     getAllForms,
-    getFormById,
+    getVisibleForms,
+    getFormAnswersById,
     getAllFormAnswers,
     updateForm,
-    deleteForm
+    deleteForm,
+    updateVisibility,
+    updateState
 }

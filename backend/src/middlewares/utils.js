@@ -37,7 +37,7 @@ const createHash = async (password, lastAccess) => {
 }
 
 const validateHash = async (password, lastAccess, hash) => {
-    return await validateUser(`${password.substring(20)}${lastAccess.toISOString()}`, hash);
+    return await validateUser(`${password.substring(20)}${lastAccess?.toISOString()}`, hash);
 }
 
 module.exports = {

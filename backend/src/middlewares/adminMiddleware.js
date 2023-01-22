@@ -9,7 +9,7 @@ const validateAdmin = async (req, res, next) => {
 
     if(!headers.hash) return res.status(401).json({status: "error", message: "Missing authentication"});
 
-    if(! await utils.validateHash(data.password, data.lastAccess, headers.hash)) {
+    if(!await utils.validateHash(data.password, data.lastAccess, headers.hash)) {
         return res.status(401).json({status: "error", message: "User unauthorized"});
     }
 

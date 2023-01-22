@@ -24,9 +24,15 @@ const createForm = async form => {
     });
 }
 
-const getAllForms = async () => {
-    return await prisma.form.findMany()
-        .then(res => {
+const getForms = async (invisible = false) => {
+    return await prisma.form.findMany({
+        where: {
+            OR: [
+                {visible: true},
+                {visible: !invisible}
+            ]
+        }
+    }).then(res => {
             prisma.$disconnect();
             return {
                 status: "ok",
@@ -41,7 +47,7 @@ const getAllForms = async () => {
         });
 }
 
-const getFormById = async (formid, userid) => {
+const getFormAnswersById = async (formid, userid) => {
     return await prisma.form.findMany({
         where: {
             formid: formid
@@ -138,16 +144,73 @@ const deleteForm = async id => {
         }
         return {
             status: "error",
-            message: e.code
+            message: e.message
         };
     });
 }
 
+const updateVisibility = async (formid, visibility) => {
+    return await prisma.form.update({
+        where: {
+            formid: formid
+        },
+        data: {
+            visible: visibility
+        }
+    }).then(res => {
+        console.log(res)
+        return {
+            status: "ok",
+            message: "Visbility altered"
+        }
+    }).catch(e => {
+        if(e instanceof PrismaClientKnownRequestError && e.code == "P2025"){
+            return {
+                status: "error",
+                message: "Form not found"
+            }
+        }
+        return {
+            status: "error",
+            message: e.message
+        };
+    })
+}
+
+const updateState = async (formid, state) => {
+    return await prisma.form.update({
+        where: {
+            formid: formid
+        },
+        data: {
+            open: state
+        }
+    }).then(() => {
+        return {
+            status: "ok",
+            message: "State altered"
+        }
+    }).catch(e => {
+        if(e instanceof PrismaClientKnownRequestError && e.code == "P2025"){
+            return {
+                status: "error",
+                message: "Form not found"
+            }
+        }
+        return {
+            status: "error",
+            message: e.message
+        };
+    })
+}
+
 module.exports = {
     createForm,
-    getAllForms,
-    getFormById,
+    getForms,
+    getFormAnswersById,
     getAllFormAnswers,
     updateForm,
-    deleteForm
+    deleteForm,
+    updateVisibility,
+    updateState
 }

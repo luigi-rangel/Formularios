@@ -19,27 +19,27 @@ const admin = require('./middlewares/adminMiddleware');
 router.post('/user', user.validateBody, userController.createUser);
 router.post('/question', question.validateBody, admin.validateAdmin, questionController.createQuestion);
 router.post('/form', form.validateBody, admin.validateAdmin, formController.createForm);
-router.post('/answer', answer.validateBody, user.validateUser, answerController.createAnswer); //alterar para enviar todas as respostas de uma vez
+router.post('/answers', answer.validateBody, user.validateUser, answerController.createAnswers);
 
 router.get('/user', userController.getUser);
-router.get('/forms', formController.getAllForms);
-router.get('/form/', formController.getFormById);
+router.get('/forms', admin.validateAdmin, formController.getAllForms);
+router.get('/visible/forms', formController.getVisibleForms);
+router.get('/form', user.validateUserOrAdmin, formController.getFormAnswersById);
 router.get('/form/answers/:id', admin.validateAdmin, formController.getAllFormAnswers);
 
-router.put('/user', admin.validateAdmin, userController.updateUser);
+router.put('/user', user.validateUserOrAdmin, userController.updateUser);
 router.put('/question', admin.validateAdmin, questionController.updateQuestion);
 router.put('/form', admin.validateAdmin, formController.updateForm);
 router.put('/answer', user.validateUser, answerController.updateAnswer);
 
-//delete
-router.delete('/user/', admin.validateAdmin, userController.deleteUser);
+router.delete('/user/', user.validateUserOrAdmin, userController.deleteUser);
 router.delete('/question/:id', admin.validateAdmin, questionController.deleteQuestion);
 router.delete('/form/:id', admin.validateAdmin, formController.deleteForm);
 router.delete('/answers/form', admin.validateAdmin, answerController.deleteFormAnswers);
 
-//patch
-router.patch('/answer/:grade/grade', admin.validateAdmin);
-router.patch('/form/:visbility/visible', admin.validateAdmin);
-router.patch('/form/:state/open', admin.validateAdmin);
+router.patch('/user/logout', user.validateUser, userController.logout);
+router.patch('/answer/:grade/grade', admin.validateAdmin, answer.validateQuery, answerController.updateGrade);
+router.patch('/form/:visibility/visible', admin.validateAdmin, form.validateQuery, formController.updateVisibility);
+router.patch('/form/:state/open', admin.validateAdmin, form.validateQuery, formController.updateState);
 
 module.exports = router;

@@ -19,6 +19,15 @@ const validateBody = (req, res, next) => {
     next();
 }
 
+const validateQuery = (req, res, next) => {
+    if(!req.query.formid) {
+        return res.status(400).json({status: "error", message: "Missing query formid"});
+    }
+
+    next()
+}
+
 module.exports = {
-    validateBody
+    validateBody,
+    validateQuery
 }

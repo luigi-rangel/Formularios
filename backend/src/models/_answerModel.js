@@ -2,14 +2,14 @@ const { PrismaClient } = require('@prisma/client');
 const { PrismaClientKnownRequestError } = require('@prisma/client/runtime');
 const prisma = new PrismaClient();
 
-const createAnswer = async answer => {
-    return await prisma.answer.create({
-        data: answer
+const createAnswers = async (answers) => {
+    return await prisma.answer.createMany({
+        data: answers
     }).then(() => {
         prisma.$disconnect();
         return {
             status: "ok",
-            message: "Answer Created"
+            message: "Answers Created"
         };
     })
     .catch(e => {
@@ -44,6 +44,13 @@ const updateAnswer = async data => {
             data: res
         }
     }).catch(e => {
+        if(e instanceof PrismaClientKnownRequestError && e.code == 'P2025'){
+            return {
+                status: "error",
+                message: "Answer not found"
+            }
+        }
+
         return {
             status: "error",
             message: e.message
@@ -52,7 +59,6 @@ const updateAnswer = async data => {
 }
 
 const deleteFormAnswers = async (formid, userid) => {
-
     return await prisma.answer.deleteMany({
         where: {
             question: {
@@ -70,6 +76,13 @@ const deleteFormAnswers = async (formid, userid) => {
             message: "Answers deleted"
         };
     }).catch(e => {
+        if(e instanceof PrismaClientKnownRequestError && e.code == 'P2025'){
+            return {
+                status: "error",
+                message: "Answer not found"
+            }
+        }
+
         return {
             status: "error",
             message: e.message
@@ -77,8 +90,40 @@ const deleteFormAnswers = async (formid, userid) => {
     })
 }
 
+const updateGrade = async (questionid, userid, grade) => {
+    return await prisma.answer.update({
+        where: {
+            id: {
+                questionid: questionid,
+                userid: userid
+            }
+        },
+        data: {
+            grade: grade
+        }
+    }).then(() => {
+        return {
+            status: "ok",
+            message: "Grade updated"
+        }
+    }).catch(e => {
+        if(e instanceof PrismaClientKnownRequestError && e.code == 'P2025'){
+            return {
+                status: "error",
+                message: "Answer not found"
+            }
+        }
+
+        return {
+            status: "error",
+            message: e.code
+        }
+    });
+}
+
 module.exports = {
-    createAnswer,
+    createAnswers,
     updateAnswer,
-    deleteFormAnswers
+    deleteFormAnswers,
+    updateGrade
 };

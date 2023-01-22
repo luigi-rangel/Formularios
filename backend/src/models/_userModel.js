@@ -119,9 +119,36 @@ const deleteUser = async email => {
         }
         return {
             status: "error",
-            message: e.code
+            message: e.message
         }
     });
+}
+
+const logout = async userid => {
+    return await prisma.user.update({
+        where: {
+            userid: userid
+        },
+        data: {
+            lastAccess: null
+        }
+    }).then(() => {
+        return {
+            status: "ok",
+            message: "User logged out"
+        }
+    }).catch(e => {
+        if(e instanceof PrismaClientKnownRequestError && e.code == "P2025"){
+            return {
+                status: "error",
+                message: "User not found"
+            }
+        }
+        return {
+            status: "error",
+            message: e.message
+        }
+    })
 }
 
 module.exports = {
@@ -129,5 +156,6 @@ module.exports = {
     getUser,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    logout
 }

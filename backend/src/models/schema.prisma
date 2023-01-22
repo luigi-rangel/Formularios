@@ -12,7 +12,7 @@ model User {
   name String
   email String @unique
   password String
-  lastAccess DateTime @db.Timestamptz() @default(now())
+  lastAccess DateTime? @db.Timestamptz() @default(now())
 
   answers Answer[]
 }

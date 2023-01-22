@@ -64,9 +64,16 @@ const deleteUser = async (req, res) => {
     return res.status(500).json(answer);
 }
 
+const logout = async (req, res) => {
+    const answer = await model.logout(req.body.userid);
+    if(answer.status == "ok") return res.status(200).json(answer);
+    return res.status(500).json(answer);
+}
+
 module.exports = {
     createUser,
     getUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    logout
 }
