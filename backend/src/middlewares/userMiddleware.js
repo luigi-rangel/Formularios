@@ -48,9 +48,6 @@ const validateUserOrAdmin = async (req, res, next) => {
     const { data: uData } = await getUserById(userid);
     const { data: aData } = await getUserById(process.env.ADMIN_ID);
 
-    console.log(uData);
-    console.log(aData);
-
     if(!(await utils.validateHash(uData.password, uData.lastAccess, headers.hash) || 
         await utils.validateHash(aData.password, aData.lastAccess, headers.hash))){
             return res.status(401).json({status: "error", message: "User unauthorized"});

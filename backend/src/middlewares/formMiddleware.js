@@ -1,3 +1,4 @@
+const { getAllFormAnswers } = require('../models/_formModel');
 const utils = require('./utils');
 
 const validateBody = (req, res, next) => {
@@ -27,7 +28,18 @@ const validateQuery = (req, res, next) => {
     next()
 }
 
+const validateState = async (req, res, next) => {
+    const { data } = await getAllFormAnswers(req.params.id);
+
+    console.log(data[0])
+
+    if(!data[0]?.open) return res.status(403).json({status: "error", message: "Form closed for new answers"});
+
+    next();
+}
+
 module.exports = {
     validateBody,
-    validateQuery
+    validateQuery,
+    validateState
 }

@@ -19,7 +19,7 @@ const admin = require('./middlewares/adminMiddleware');
 router.post('/user', user.validateBody, userController.createUser);
 router.post('/question', question.validateBody, admin.validateAdmin, questionController.createQuestion);
 router.post('/form', form.validateBody, admin.validateAdmin, formController.createForm);
-router.post('/answers', answer.validateBody, user.validateUser, answerController.createAnswers);
+router.post('/answers/:id', answer.validateBody, user.validateUser, form.validateState, answerController.createAnswers);
 
 router.get('/user', userController.getUser);
 router.get('/forms', admin.validateAdmin, formController.getAllForms);

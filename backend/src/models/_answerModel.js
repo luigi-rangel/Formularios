@@ -18,10 +18,10 @@ const createAnswers = async (answers) => {
         if(e instanceof PrismaClientKnownRequestError && e.code == 'P2002'){
             return {
                 status: "error",
-                message: "Answer already registered"
+                message: "Answers already registered"
             }
         }
-
+        console.log(e)
         return {
             status: "error",
             message: e.message
@@ -79,7 +79,7 @@ const deleteFormAnswers = async (formid, userid) => {
         if(e instanceof PrismaClientKnownRequestError && e.code == 'P2025'){
             return {
                 status: "error",
-                message: "Answer not found"
+                message: "Answers not found"
             }
         }
 
